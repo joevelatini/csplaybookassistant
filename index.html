@@ -3,386 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS Playbook Assistant | ActivTrak</title>
+    <title>CS Playbook Assistant v2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00A4BD; --primary-dark: #008299; --primary-light: #E5F7FA; --secondary: #1B2A4E; --warning: #F59E0B; --gray-50: #F9FAFB; --gray-100: #F3F4F6; --gray-200: #E5E7EB; --gray-500: #6B7280; --gray-700: #374151; --gray-900: #111827; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(--gray-900); line-height: 1.6; }
-        .header { background: linear-gradient(135deg, var(--secondary) 0%, #2d3e6d 100%); color: white; padding: 1rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header-content { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-        .logo span { color: white; }
-        .header h1 { font-size: 1.1rem; font-weight: 500; opacity: 0.9; }
-        .nav-link-header { color: white; text-decoration: none; font-size: 0.9rem; opacity: 0.8; }
-        .nav-link-header:hover { opacity: 1; }
-        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
-        .tabs { display: flex; gap: 0.5rem; border-bottom: 2px solid var(--gray-200); margin-bottom: 1.5rem; }
-        .tab { padding: 0.75rem 1.5rem; border: none; background: none; font-size: 1rem; font-weight: 500; color: var(--gray-500); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-        .tab:hover { color: var(--gray-700); }
-        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .card h2 { font-size: 1.25rem; color: var(--secondary); margin-bottom: 1rem; }
-        .card h3 { font-size: 1rem; color: var(--gray-700); margin: 1.5rem 0 0.75rem; font-weight: 600; }
-        textarea { width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 1rem; font-family: inherit; resize: none; }
-        textarea:focus { outline: none; border-color: var(--primary); }
-        .context-toggle { color: var(--primary); font-size: 0.9rem; background: none; border: none; cursor: pointer; margin-top: 0.75rem; }
-        .context-fields { display: none; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
-        .context-fields.show { display: grid; }
-        .context-field label { display: block; font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.25rem; }
-        .context-field input { width: 100%; padding: 0.6rem; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.9rem; }
-        .btn-primary { width: 100%; padding: 1rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .examples { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-100); }
-        .examples p { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 0.5rem; }
-        .example-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .example-btn { background: var(--gray-100); border: none; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; color: var(--gray-700); cursor: pointer; }
-        .example-btn:hover { background: var(--gray-200); }
-        #results { display: none; }
-        #results.show { display: block; }
-        .results-header { display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--secondary); margin-bottom: 1rem; }
-        .results-header span { color: var(--primary); }
-        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
-        .alert-warning { background: #FEF3C7; border-left: 4px solid var(--warning); }
-        .alert-warning h4 { color: #92400E; margin-bottom: 0.5rem; }
-        .alert-warning p { color: #78350F; font-size: 0.9rem; margin: 0.25rem 0; }
-        .steps-list { list-style: none; padding: 0; }
-        .steps-list li { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--gray-700); }
-        .step-number { flex-shrink: 0; width: 28px; height: 28px; background: var(--primary-light); color: var(--primary-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; }
-        .step-number.sub { background: var(--gray-100); color: var(--gray-500); }
-        .step-text { padding-top: 0.25rem; }
-        .step-text.sub { color: var(--gray-600); }
-        .docs-box { background: var(--primary-light); padding: 1rem; border-radius: 8px; margin-top: 1rem; }
-        .docs-box h4 { color: var(--primary-dark); margin-bottom: 0.5rem; font-size: 0.95rem; }
-        .docs-box ul { list-style: none; padding: 0; }
-        .docs-box li { color: var(--primary-dark); font-size: 0.9rem; margin: 0.25rem 0; }
-        .links-section { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-100); }
-        .links-section h4 { color: var(--gray-700); margin-bottom: 0.75rem; font-size: 0.95rem; }
-        .links-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .doc-link { background: var(--gray-100); color: var(--primary); padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; }
-        .doc-link:hover { background: var(--gray-200); }
-        .ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .ref-card { padding: 1rem; border-radius: 10px; }
-        .ref-card.cyan { background: var(--primary-light); }
-        .ref-card.amber { background: #FEF3C7; }
-        .ref-card.purple { background: #F3E8FF; }
-        .ref-card.green { background: #D1FAE5; }
-        .ref-card h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
-        .ref-card.cyan h4 { color: var(--primary-dark); }
-        .ref-card.amber h4 { color: #92400E; }
-        .ref-card.purple h4 { color: #6B21A8; }
-        .ref-card.green h4 { color: #065F46; }
-        .ref-card ul { list-style: none; padding: 0; font-size: 0.85rem; }
-        .ref-card.cyan li { color: #0E7490; }
-        .ref-card.amber li { color: #78350F; }
-        .ref-card.purple li { color: #7C3AED; }
-        .ref-card.green li { color: #047857; }
-        .policy-list { margin-top: 1.5rem; }
-        .policy-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--gray-50); border-radius: 8px; margin-bottom: 0.5rem; }
-        .policy-item:hover { background: var(--gray-100); }
-        .policy-item span { color: var(--gray-700); }
-        .policy-item a { color: var(--primary); text-decoration: none; font-size: 0.9rem; }
-        @media (max-width: 600px) { .container { padding: 1rem; } .context-fields { grid-template-columns: 1fr; } }
+        :root{--p:#00A4BD;--pd:#008299;--pl:#E5F7FA;--s:#1B2A4E;--w:#F59E0B;--g50:#F9FAFB;--g100:#F3F4F6;--g200:#E5E7EB;--g500:#6B7280;--g700:#374151;--g900:#111827}
+        *{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--g50);color:var(--g900);line-height:1.6}
+        .hdr{background:linear-gradient(135deg,var(--s) 0%,#2d3e6d 100%);color:#fff;padding:1rem 2rem}.hdr-c{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+        .logo{font-size:1.5rem;font-weight:700;color:var(--p)}.logo span{color:#fff}.hdr h1{font-size:1.1rem;font-weight:500;opacity:.9}
+        .nav-lnk{color:#fff;text-decoration:none;font-size:.9rem;opacity:.8}.nav-lnk:hover{opacity:1}.cnt{max-width:900px;margin:0 auto;padding:2rem}
+        .tabs{display:flex;gap:.5rem;border-bottom:2px solid var(--g200);margin-bottom:1.5rem}.tab{padding:.75rem 1.5rem;border:none;background:none;font-size:1rem;font-weight:500;color:var(--g500);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}.tab:hover{color:var(--g700)}.tab.active{color:var(--p);border-bottom-color:var(--p)}
+        .tc{display:none}.tc.active{display:block}.card{background:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.05)}.card h2{font-size:1.25rem;color:var(--s);margin-bottom:1rem}.card h3{font-size:1rem;color:var(--g700);margin:1.5rem 0 .75rem;font-weight:600}
+        textarea{width:100%;padding:1rem;border:2px solid var(--g200);border-radius:10px;font-size:1rem;font-family:inherit;resize:none}textarea:focus{outline:none;border-color:var(--p)}
+        .ctx-tog{color:var(--p);font-size:.9rem;background:none;border:none;cursor:pointer;margin-top:.75rem}.ctx-flds{display:none;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}.ctx-flds.show{display:grid}
+        .ctx-fld label{display:block;font-size:.8rem;color:var(--g500);margin-bottom:.25rem}.ctx-fld input{width:100%;padding:.6rem;border:1px solid var(--g200);border-radius:6px;font-size:.9rem}
+        .btn-p{width:100%;padding:1rem;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:1rem}.btn-p:hover{background:var(--pd)}
+        .ex{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--g100)}.ex p{font-size:.85rem;color:var(--g500);margin-bottom:.5rem}.ex-btns{display:flex;flex-wrap:wrap;gap:.5rem}
+        .ex-btn{background:var(--g100);border:none;padding:.5rem 1rem;border-radius:20px;font-size:.85rem;color:var(--g700);cursor:pointer}.ex-btn:hover{background:var(--g200)}
+        #res{display:none}#res.show{display:block}.res-hdr{display:flex;align-items:center;gap:.5rem;font-size:1.1rem;font-weight:600;color:var(--s);margin-bottom:1rem}.res-hdr span{color:var(--p)}
+        .alrt{padding:1rem;border-radius:8px;margin-bottom:1rem}.alrt-w{background:#FEF3C7;border-left:4px solid var(--w)}.alrt-d{background:#FEE2E2;border-left:4px solid #DC2626}
+        .alrt h4{margin-bottom:.5rem;font-size:.95rem}.alrt-w h4{color:#92400E}.alrt-d h4{color:#991B1B}.alrt p{font-size:.85rem;margin:.25rem 0}.alrt-w p{color:#78350F}.alrt-d p{color:#7F1D1D}
+        .pol-sec{background:var(--g50);border-radius:10px;padding:1rem;margin-bottom:1rem;border-left:4px solid var(--p)}.pol-sec h4{color:var(--pd);font-size:.95rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+        .pol-sec h4 a{color:var(--p);text-decoration:none;font-size:.8rem;margin-left:auto}.pol-sec h4 a:hover{text-decoration:underline}
+        .stp-lst{list-style:none;padding:0;margin:0}.stp-lst li{display:flex;gap:.75rem;margin-bottom:.5rem;color:var(--g700);font-size:.9rem}
+        .stp-n{flex-shrink:0;width:24px;height:24px;background:var(--pl);color:var(--pd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600}.stp-n.sub{background:var(--g100);color:var(--g500);font-size:.7rem;width:20px;height:20px}
+        .stp-t{padding-top:.15rem}.stp-t.sub{color:var(--g600);font-size:.85rem}
+        .lnks{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--g100)}.lnks h4{color:var(--g700);margin-bottom:.75rem;font-size:.9rem}.lnks-g{display:flex;flex-wrap:wrap;gap:.5rem}
+        .doc-lnk{background:var(--g100);color:var(--p);padding:.5rem 1rem;border-radius:6px;text-decoration:none;font-size:.85rem}.doc-lnk:hover{background:var(--g200)}
+        .ref-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}.ref-c{padding:1rem;border-radius:10px}.ref-c.cy{background:var(--pl)}.ref-c.am{background:#FEF3C7}.ref-c.pu{background:#F3E8FF}.ref-c.gr{background:#D1FAE5}
+        .ref-c h4{font-size:.95rem;margin-bottom:.5rem}.ref-c.cy h4{color:var(--pd)}.ref-c.am h4{color:#92400E}.ref-c.pu h4{color:#6B21A8}.ref-c.gr h4{color:#065F46}
+        .ref-c ul{list-style:none;padding:0;font-size:.85rem}.ref-c.cy li{color:#0E7490}.ref-c.am li{color:#78350F}.ref-c.pu li{color:#7C3AED}.ref-c.gr li{color:#047857}
+        .pol-lst{margin-top:1.5rem}.pol-itm{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:var(--g50);border-radius:8px;margin-bottom:.5rem}.pol-itm:hover{background:var(--g100)}.pol-itm span{color:var(--g700)}.pol-itm a{color:var(--p);text-decoration:none;font-size:.9rem}
+        @media(max-width:600px){.cnt{padding:1rem}.ctx-flds{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div style="display:flex;align-items:center;gap:1rem;">
-                <div class="logo">Activ<span>Trak</span></div>
-                <h1>CS Playbook Assistant</h1>
-            </div>
-            <a href="https://drive.google.com/drive/folders/1uYPgYhUVYcJbJ_ul9l1EoGbm3c7NBGRy" target="_blank" class="nav-link-header">📁 CX Playbook Drive →</a>
-        </div>
-    </header>
-    <div class="container">
-        <div class="tabs">
-            <button class="tab active" data-tab="assistant">🤖 Assistant</button>
-            <button class="tab" data-tab="reference">📋 Quick Reference</button>
-        </div>
-        <div id="assistant" class="tab-content active">
-            <div class="card">
-                <h2>What's happening with your customer?</h2>
-                <textarea id="question" rows="3" placeholder="Describe your situation... e.g., 'My customer just told me they're dropping 500 licenses'"></textarea>
-                <button class="context-toggle" id="contextToggle">+ Add context (ARR, impact, etc.)</button>
-                <div class="context-fields" id="contextFields">
-                    <div class="context-field"><label>Account ARR ($)</label><input type="number" id="arr" placeholder="75000"></div>
-                    <div class="context-field"><label>ARR Impact ($)</label><input type="number" id="arrImpact" placeholder="25000"></div>
-                    <div class="context-field"><label>Days to Renewal</label><input type="number" id="daysToRenewal" placeholder="90"></div>
-                </div>
-                <button class="btn-primary" id="submitBtn">Get Guidance</button>
-                <div class="examples">
-                    <p>Try an example:</p>
-                    <div class="example-buttons">
-                        <button class="example-btn">Customer dropping licenses</button>
-                        <button class="example-btn">Customer not responding</button>
-                        <button class="example-btn">Showed wrong account data</button>
-                        <button class="example-btn">Need to escalate</button>
-                        <button class="example-btn">What note type to use?</button>
-                        <button class="example-btn">Who is on-call?</button>
-                    </div>
-                </div>
-            </div>
-            <div class="card" id="results">
-                <div class="results-header"><span>✓</span> Recommended Actions</div>
-                <div id="notifications"></div>
-                <div id="steps"></div>
-                <div id="documentation"></div>
-                <div id="links"></div>
-            </div>
-        </div>
-        <div id="reference" class="tab-content">
-            <div class="card">
-                <h2>Key Thresholds</h2>
-                <div class="ref-grid">
-                    <div class="ref-card cyan"><h4>Contraction Approvals</h4><ul><li>• &lt;$500: CSM approves</li><li>• $500-$20K: Manager approves</li><li>• &gt;$20K: VP of CS approves</li></ul></div>
-                    <div class="ref-card amber"><h4>Loss Notifications</h4><ul><li>• Surprise Loss &gt;$20K: Slack Mel</li><li>• Material Loss ≥$50K: Slack Gabriela + huddle</li></ul></div>
-                    <div class="ref-card purple"><h4>Executive Escalation</h4><ul><li>• &lt;$100K ARR: Escalate to Mel</li><li>• ≥$100K ARR: Escalate to Gabriela</li></ul></div>
-                    <div class="ref-card green"><h4>Special Terms Approval</h4><ul><li>• Non-standard billing: CS Manager</li><li>• Remove auto-renewal: VP of CS</li><li>• Month-to-month/TFC: CCO</li></ul></div>
-                </div>
-                <h3>Policy Documents</h3>
-                <div class="policy-list">
-                    <div class="policy-item"><span>Escalation Policy</span><a href="https://docs.google.com/document/d/1b1QTddct0rHwCiGTEmwl0RmI6-KdKbVu6g_wHeMvtlk/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Contraction Approvals</span><a href="https://docs.google.com/document/d/13xqWkeNaZsAuwRpt4CdnvEe1sowXL7BVftOlwBhopp8/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Unresponsive Customer Policy</span><a href="https://docs.google.com/document/d/1LKi70A29cg7xC0WlQDosMgoPAgeq0sDCDlVJ5WF3ve0/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Data Incident SOP</span><a href="https://docs.google.com/document/d/1dWErWCTltQ4VV88OtdmymfE6SwQzfSEEtDif9FTahjQ/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>ChurnZero Notes Policy</span><a href="https://docs.google.com/document/d/1wVIOItiYG5yAFqjkKuf-vLuutL8S0l59PcGwhctnaAo/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>AI Usage Policy</span><a href="https://docs.google.com/document/d/1MDEC3WHKz6DwmPUM-MGyW1vQ4EmfpyTy4p88TLugNJE/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Customer Presentation Guidelines</span><a href="https://docs.google.com/document/d/1CwKOzkPqXJudraUs_n85CQci6DmT5zDVF6f-aF6L11Q/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>MSP Licensing Policy</span><a href="https://docs.google.com/document/d/1SIsPnGkMrXHn4aCq0Fd0JIa5_WcsbOLlhshWgIjMNp0/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Forecasting Expectations</span><a href="https://docs.google.com/document/d/182kBfnVt1FGLhIN6H17XZYeq9x00li5baNoQR8n3JWM/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Account Plan Expectations</span><a href="https://docs.google.com/document/d/1NLm5VgIgTtsNrfMNvKs5rCg0ZfYrh_vr0hJk0I3s0NU/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Non-Payment Churn Risk</span><a href="https://docs.google.com/document/d/1lZEXI8XcLMq5wnaO9add6f_xr3dDaPQiSzwtD0WdAu8/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>CS Leader On-Call Policy</span><a href="https://docs.google.com/document/d/1vZlhzTO4qXVyNuSxCpigr8yKONGp3ktDmNKuUvskfnY/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Cross-Functional Incidents</span><a href="https://docs.google.com/document/d/1AOkejfJWodE6IelwjVLEyrsg-8D9mbQBMKz8Ez2XHew/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Contact Role Definitions</span><a href="https://docs.google.com/document/d/1JuJJL8hokldD4eBJE33NdFRLQ_jUlE81jzWHghTpAC0/edit" target="_blank">Open →</a></div>
-                    <div class="policy-item"><span>Bulk Uplift Approach</span><a href="https://docs.google.com/document/d/1pGB39evnKazZfyq9V5RIikb-hIsb7f8IJICrGKhbAl8/edit" target="_blank">Open →</a></div>
-                </div>
-            </div>
-        </div>
-    </div>
+<header class="hdr"><div class="hdr-c"><div style="display:flex;align-items:center;gap:1rem"><div class="logo">Activ<span>Trak</span></div><h1>CS Playbook Assistant v2</h1></div><a href="https://drive.google.com/drive/folders/1uYPgYhUVYcJbJ_ul9l1EoGbm3c7NBGRy" target="_blank" class="nav-lnk">📁 CX Playbook Drive →</a></div></header>
+<div class="cnt">
+<div class="tabs"><button class="tab active" data-tab="assistant">🤖 Assistant</button><button class="tab" data-tab="reference">📋 Quick Reference</button></div>
+<div id="assistant" class="tc active">
+<div class="card"><h2>What's happening with your customer?</h2>
+<textarea id="q" rows="3" placeholder="Describe your situation..."></textarea>
+<button class="ctx-tog" id="ctxTog">+ Add context (ARR, impact, etc.)</button>
+<div class="ctx-flds" id="ctxFlds"><div class="ctx-fld"><label>Account ARR ($)</label><input type="number" id="arr" placeholder="75000"></div><div class="ctx-fld"><label>ARR Impact ($)</label><input type="number" id="imp" placeholder="25000"></div><div class="ctx-fld"><label>Days to Renewal</label><input type="number" id="dtr" placeholder="90"></div></div>
+<button class="btn-p" id="sub">Get Guidance</button>
+<div class="ex"><p>Try an example:</p><div class="ex-btns"><button class="ex-btn">Customer dropping licenses</button><button class="ex-btn">Customer not responding</button><button class="ex-btn">Showed wrong account data</button><button class="ex-btn">Need to escalate</button><button class="ex-btn">What note type to use?</button><button class="ex-btn">Who is on-call?</button></div></div></div>
+<div class="card" id="res"><div class="res-hdr"><span>✓</span> Recommended Actions</div><div id="out"></div></div>
+</div>
+<div id="reference" class="tc">
+<div class="card"><h2>Key Thresholds</h2>
+<div class="ref-g"><div class="ref-c cy"><h4>Contraction Approvals</h4><ul><li>• &lt;$500: CSM approves</li><li>• $500-$20K: Manager</li><li>• &gt;$20K: VP of CS</li></ul></div><div class="ref-c am"><h4>Loss Notifications</h4><ul><li>• &gt;$20K surprise: Slack Mel</li><li>• ≥$50K material: Slack Gabriela + huddle</li></ul></div><div class="ref-c pu"><h4>Executive Escalation</h4><ul><li>• &lt;$100K ARR: Mel</li><li>• ≥$100K ARR: Gabriela</li></ul></div><div class="ref-c gr"><h4>Special Terms</h4><ul><li>• Non-std billing: Manager</li><li>• Remove auto-renewal: VP</li><li>• M2M/TFC: CCO</li></ul></div></div>
+<h3>Policy Documents</h3>
+<div class="pol-lst">
+<div class="pol-itm"><span>Escalation Policy</span><a href="https://docs.google.com/document/d/1b1QTddct0rHwCiGTEmwl0RmI6-KdKbVu6g_wHeMvtlk/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Contraction Approvals</span><a href="https://docs.google.com/document/d/13xqWkeNaZsAuwRpt4CdnvEe1sowXL7BVftOlwBhopp8/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Unresponsive Customer Policy</span><a href="https://docs.google.com/document/d/1LKi70A29cg7xC0WlQDosMgoPAgeq0sDCDlVJ5WF3ve0/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Data Incident SOP</span><a href="https://docs.google.com/document/d/1dWErWCTltQ4VV88OtdmymfE6SwQzfSEEtDif9FTahjQ/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>ChurnZero Notes Policy</span><a href="https://docs.google.com/document/d/1wVIOItiYG5yAFqjkKuf-vLuutL8S0l59PcGwhctnaAo/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Forecasting Expectations</span><a href="https://docs.google.com/document/d/182kBfnVt1FGLhIN6H17XZYeq9x00li5baNoQR8n3JWM/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Account Plan Expectations</span><a href="https://docs.google.com/document/d/1NLm5VgIgTtsNrfMNvKs5rCg0ZfYrh_vr0hJk0I3s0NU/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>AI Usage Policy</span><a href="https://docs.google.com/document/d/1MDEC3WHKz6DwmPUM-MGyW1vQ4EmfpyTy4p88TLugNJE/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Presentation Guidelines</span><a href="https://docs.google.com/document/d/1CwKOzkPqXJudraUs_n85CQci6DmT5zDVF6f-aF6L11Q/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>MSP Licensing Policy</span><a href="https://docs.google.com/document/d/1SIsPnGkMrXHn4aCq0Fd0JIa5_WcsbOLlhshWgIjMNp0/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Non-Payment Approach</span><a href="https://docs.google.com/document/d/1lZEXI8XcLMq5wnaO9add6f_xr3dDaPQiSzwtD0WdAu8/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>CS Leader On-Call Policy</span><a href="https://docs.google.com/document/d/1vZlhzTO4qXVyNuSxCpigr8yKONGp3ktDmNKuUvskfnY/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Cross-Functional Incidents</span><a href="https://docs.google.com/document/d/1AOkejfJWodE6IelwjVLEyrsg-8D9mbQBMKz8Ez2XHew/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Contact Role Definitions</span><a href="https://docs.google.com/document/d/1JuJJL8hokldD4eBJE33NdFRLQ_jUlE81jzWHghTpAC0/edit" target="_blank">Open →</a></div>
+<div class="pol-itm"><span>Bulk Uplift Approach</span><a href="https://docs.google.com/document/d/1pGB39evnKazZfyq9V5RIikb-hIsb7f8IJICrGKhbAl8/edit" target="_blank">Open →</a></div>
+</div></div></div></div>
 <script>
-const defined = {
-    contraction: ['drop','dropping','dropped','reduce','reducing','reduced','reduction','contraction','downgrade','downgrading','licenses','licence','seats','users','agents','endpoints','fewer licenses','less licenses','fewer seats','less seats','remove licenses','remove seats','cancel','canceling','cancelling','canceled','cancelled','cancellation','terminate','terminating','termination','end contract','not renewing','wont renew','will not renew','losing','lose','lost','loss','churn','churning','churned','leaving','leave','walking','walk away','cut','cutting','decrease','decreasing','fewer','less','shrink','shrinking','downsizing','downsize','scale down','scaling down','trim','trimming','reduce spend','budget cut','budget cuts','cost cutting','partial','some licenses','half','portion','dont need','no longer need','not using','underutilized','unused','too many','overpaying','paying too much','right-size','rightsize','true-up','true up','switching','switch to','moving to','going with','competitor','alternative','replacing','discontinue','sunset','sunsetting','phase out','phasing out','winding down','layoffs','layoff','rif','restructuring','reorg','contraction approval','approve contraction','sfdc quote','arr reduction','arr decrease','give back','surrender','over-licensed','headcount','head count'],
-    unresponsive: ['unresponsive','non-responsive','nonresponsive','not responding','no response','havent heard','hasnt responded','no reply','not replying','wont reply','never replied','stopped replying','not getting back','wont get back','never got back','ghosting','ghosted','ghost','silent','radio silent','gone silent','went silent','dark','gone dark','went dark','going dark','mia','missing','disappeared','vanished','cant find','ignoring','ignored','avoiding','avoided','cant reach','cannot reach','unable to reach','unreachable','not available','unavailable','no communication','stopped communicating','not answering','wont answer','never answers','not picking up','email bounced','out of office','ooo','auto-reply','not reading emails','missed meeting','no show','no-show','noshow','didnt show','skipped meeting','cancelled meeting','canceled meeting','keeps rescheduling','wont schedule','wont meet','declined meeting','voicemail','straight to voicemail','weeks','days','month','waiting','been waiting','still waiting','long time','crickets','fallen off','off the radar','checked out','disengaged'],
-    dataIncident: ['data incident','data breach','breach','security incident','security breach','pii','personal data','sensitive data','confidential','disclosed','disclosure','exposed','exposure','leaked','leak','wrong customer','wrong account','wrong client','wrong company','wrong person','wrong recipient','wrong data','incorrect data','different customer','another customer','someone else','mixed up','mixup','cross-contamination','contaminated','showed another','shown another','saw another','displayed wrong','showing wrong','sent to wrong','sent wrong','wrong attachment','wrong file','wrong report','wrong email','accident','accidental','accidentally','by accident','mistake','mistakenly','error','oops','messed up','screwed up','unauthorized','shouldnt have seen','screen share','screenshare','demo','presentation','during call','while presenting','privacy','gdpr','compliance','soc 2','soc2','72 hours'],
-    nonPayment: ['non-payment','nonpayment','non payment','not paying','not paid','hasnt paid','havent paid','wont pay','refused to pay','cant pay','payment issue','payment problem','payment failed','payment declined','overdue','past due','late payment','behind on payment','delinquent','collections','collection','invoice','invoices','unpaid invoice','outstanding invoice','invoice dispute','unpaid','unpaid balance','outstanding','outstanding balance','amount due','amount owed','owes','owed','billing issue','billing problem','billing dispute','accounts receivable','ar','ar issue','finance issue','finance flagged','card declined','card expired','suspended','suspension','on hold','account hold','service suspended','non-payment list','npl','churn channel','arrears'],
-    autoRenewal: ['auto-renewal','auto renewal','autorenewal','automatic renewal','auto-renew','auto renew','remove renewal','remove auto','cancel renewal','stop renewal','disable renewal','turn off renewal','opt out','opt-out','opting out','no auto','renewal clause','renewal terms','evergreen','evergreen clause','manual renewal','renew manually','30 day notice','60 day notice','90 day notice','vp approval','vp of cs'],
-    specialTerms: ['month-to-month','month to month','monthly contract','m2m','mtm','termination for convenience','tfc','cancel anytime','terminate anytime','special terms','custom terms','non-standard','nonstandard','custom contract','flexible terms','short term','shorter term','quarterly','6 month','3 month','90 day','pilot','trial','break clause','exit clause','escape clause','early termination','early exit','cancellation clause','billing frequency','quarterly billing','semi-annual','tiered pricing','volume discount','no commitment','no lock-in','cco','cco approval'],
-    msp: ['msp','managed service','managed services','managed service provider','reseller','partner','channel partner','var','value added reseller','third party','third-party','3rd party','it provider','it company','it consultant','outsourced','outsourced it','managing their account','manages their account','someone else manages','licensed msp','unlicensed msp','msp license','msp licensing','not licensed','not certified','msp program','msp access','partner access','matt finlayson','50 seats','account termination'],
-    forecasting: ['forecast','forecasting','forecasts','pipeline','nrr','net revenue retention','grr','arr','annual recurring','revenue forecast','tracker','excel tracker','forecast tracker','nrr tracker','spreadsheet','excel','green highlight','highlight green','friday call','friday forecast','weekly call','forecast call','by thursday','eod thursday','before friday','projection','projections','outlook','expected','movement','changes','delta','variance','accuracy','commit','committed','surprise','no surprises','surprise churn','$20k','20k','$50k','50k','slack mel','slack gabriela','huddle','churnzero','cz','system of record'],
-    accountPlan: ['account plan','account plans','success plan','at-risk','at risk','atrisk','high risk','risky','flagged','red flag','yellow flag','watch list','save plan','save strategy','rescue','rescue plan','saving','retention','retention plan','retain','keep the customer','risk plan','mitigation','risk mitigation','health plan','account health','health score','unhealthy','poor health','declining health','churn risk','prevent churn','likely to churn','going to churn','might churn','turnaround','turn around','recovery','action plan','renewal goal','save goal','expand goal','value realization','disengaged','low engagement','not engaged','low usage','no usage','underutilized','re-engage','reengage','120 days','$20k','20k'],
-    escalation: ['escalate','escalation','escalating','need to escalate','should i escalate','when to escalate','involve manager','involve leadership','get manager','need manager','manager help','leadership help','bring in manager','loop in manager','executive involvement','get mel','involve mel','escalate to mel','get gabriela','escalate to gabriela','customer wants manager','speak with manager','talk to manager','serious issue','critical issue','major issue','urgent','cant resolve','cannot resolve','unable to resolve','beyond my scope','outside my authority','above my pay grade','need approval','need authority','need exception','customer upset','customer angry','customer frustrated','unhappy customer','sentiment declining','getting worse','deteriorating','tried everything','at a loss','$20k','$30k','$50k','$100k','csm ownership','quarterback'],
-    aiUsage: ['ai','artificial intelligence','chatgpt','chat gpt','claude','gpt','llm','ai tool','ai tools','ai usage','using ai','use ai','granola','meeting notes','call notes','note taking','ai notes','ai summary','ai draft','draft email','ai email','ai writing','ai data','ai pii','paste into ai','share with ai','anonymize','anonymization','anonymized','ai disclosure','disclose ai','ai policy','ai approved','approved ai','personal ai','personal account','free account','company ai','enterprise ai','can i use ai','is it ok to'],
-    presentation: ['presentation','presenting','demo','demonstration','screen share','screenshare','share screen','sharing screen','epr','executive productivity review','productivity review','business review','qbr','health check','training','training session','walkthrough','walk through','super admin','superadmin','sa','sa access','log in as','login as','impersonate','impersonation','customer instance','their instance','their account','customer data','show their data','demo environment','demo instance','sales instance','sandbox','verify account','account id','close tabs','fresh login'],
-    churnzeroNotes: ['churnzero','churn zero','cz','cz note','cz notes','note','notes','documentation','document','log','logging','account health','account health note','renewal overview','renewal update','leadership note','onboarding','onboarding note','epr note','training note','technical mitigation','support note','non-payment note','product feedback','productivity lab','reactivation','special contract','tag','tags','tagging','critical update','product feedback tag','value feedback','roadmap feedback','how often','note frequency','bi-weekly','biweekly','monthly','quarterly','share note','license pool','command center','which account'],
-    contactRoles: ['contact role','contact roles','contact type','role definition','primary contact','economic buyer','eb','budget holder','budget owner','decision maker','executive sponsor','sponsor','champion','end user','admin','administrator','billing contact','accounts payable','buying committee','stakeholder','meddic','update contacts','maintain contacts','salesforce contact','sf contact','who is the','quarterly review'],
-    crossFunctional: ['cross-functional','cross functional','incident coordination','incident response','product incident','engineering incident','support incident','outage','system outage','downtime','system down','system issue','platform issue','technical issue','bug','incident','production incident','p1','p2','sev 1','sev 2','customer communication','incident communication','notify customers','who communicates','who contacts','tam','signature','signature customer','named account','scaled account','working group','war room','incident overview','engineering','product','support','customer impact','affected customers','resolution','fix','workaround','eta'],
-    onCall: ['on-call','on call','oncall','after hours','afterhours','weekend','holiday','night','evening','outside hours','who to call','who do i call','emergency contact','urgent contact','leader on call','cs leader','rota','schedule','on-call schedule','pinned message','#csm_team','csm_team','#cx','#production_incidents','urgent','emergency','immediate','15 minutes','phone','call by phone','not slack','not email','backup','primary and backup'],
-    bulkUplift: ['bulk uplift','uplift','price uplift','pricing uplift','bulk renewal','under 20k','below 20k','less than 20k','<20k','7%','seven percent','list price','ceiling','cap','direct customer','var customer','partner margin','15% off','excluded','already signed','no auto-renewal','scaled','revops','rev ops']
+const K={
+ctr:['drop','dropping','reduce','contraction','downgrade','licenses','seats','cancel','churn','loss','losing','layoff','rif','restructur','right-size','true-up','switching','competitor'],
+unr:['unresponsive','not responding','no response','ghosting','ghost','dark','silent','mia','missing','cant reach','ignored','voicemail','no show','crickets','disengaged'],
+dat:['data incident','breach','pii','disclosed','exposure','leaked','wrong customer','wrong account','wrong person','mixed up','showed another','sent to wrong','mistake','accidentally','shouldnt have seen','privacy','soc 2','72 hours'],
+pay:['non-payment','not paid','overdue','past due','delinquent','invoice','unpaid','outstanding','billing issue','collections','payment issue'],
+esc:['escalate','escalation','involve manager','need manager','customer upset','frustrated','cant resolve','need approval','deteriorating'],
+ai:['ai','chatgpt','claude','gpt','granola','ai tool','anonymize','ai notes','ai draft'],
+prs:['presentation','demo','screen share','screenshare','epr','qbr','super admin','sa access','impersonate','verify account'],
+cz:['churnzero','cz note','notes','documentation','account health','renewal overview','renewal update','leadership note','tag','how often'],
+onc:['on-call','oncall','after hours','weekend','holiday','who to call','emergency','urgent','leader on call','rota'],
+msp:['msp','managed service','reseller','partner','third party','unlicensed','licensed msp'],
+frc:['forecast','tracker','nrr','grr','excel','green highlight','friday call','surprise','$20k','$50k'],
+acp:['account plan','at-risk','save plan','risk plan','120 days','renewal goal'],
+cfi:['cross-functional','incident','outage','engineering','production','affected customers'],
+blk:['bulk uplift','uplift','7%','<20k','under 20k','list price'],
+spt:['month-to-month','tfc','termination for convenience','special terms','non-standard','cco approval'],
+rol:['contact role','primary contact','economic buyer','executive sponsor','billing contact','meddic']
 };
+const P={
+ctr:{n:"Contraction Approval Process",u:"https://docs.google.com/document/d/13xqWkeNaZsAuwRpt4CdnvEe1sowXL7BVftOlwBhopp8/edit",
+s:(c)=>{let s=[];const i=c.imp||0;
+if(i<500)s.push("CSMs can approve contractions up to $500 - you can self-approve");
+else if(i<20000)s.push("CS Managers approve $500-$20K - submit for manager approval");
+else s.push("VP of CS approves >$20K - submit for VP approval");
+s.push("Submit SFDC Quote with:");s.push({sub:"Previous ARR → New ARR → Change in ARR"});s.push({sub:"Previous year's cost per seat → New cost per seat"});s.push({sub:"Previous seat count"});s.push({sub:"Any other applicable information"});return s;},
+a:(c)=>{let a=[];const i=c.imp||0;
+if(i>=50000)a.push({t:'d',h:'🚨 MATERIAL LOSS (≥$50K)',m:["Slack Gabriela immediately: Customer name, change amount, context, help needed","Schedule 15-min huddle for mitigation/executive engagement/strategy","Also notify Mel"]});
+else if(i>=20000)a.push({t:'w',h:'⚠️ SURPRISE LOSS (>$20K)',m:["Slack Mel immediately: Customer name, change amount, context, help needed"]});
+return a;}},
 
-function match(q, keys) {
-    const lower = q.toLowerCase();
-    for (const k of keys) { if (lower.includes(k)) return true; }
-    return false;
+frc:{n:"Forecast Management Expectations",u:"https://docs.google.com/document/d/182kBfnVt1FGLhIN6H17XZYeq9x00li5baNoQR8n3JWM/edit",
+s:(c)=>["Update forecast in Excel tracker DAILY (not just Thursday)","Any change must be highlighted in GREEN","ChurnZero is system of record - detailed context must be in CZ, not just Excel","All forecasts updated by EOD Thursday for Friday call","Be prepared to explain any movement during Friday's forecast call","Substantial movement should not surprise your manager"],
+a:(c)=>{let a=[];const i=c.imp||0;
+if(i>=50000)a.push({t:'d',h:'🚨 ESCALATE ≥$50K CHANGE',m:["Slack Gabriela: Customer name, change amount, context, help needed","If necessary, schedule 15-min huddle"]});
+else if(i>=20000)a.push({t:'w',h:'⚠️ ESCALATE >$20K CHANGE',m:["Slack Mel: Customer name, change amount, context, help needed"]});
+return a;}},
+
+acp:{n:"Account Plan Expectations",u:"https://docs.google.com/document/d/1NLm5VgIgTtsNrfMNvKs5rCg0ZfYrh_vr0hJk0I3s0NU/edit",
+s:(c)=>{let s=[];const i=c.imp||0,d=c.dtr||999;
+if(i>=20000&&d<=120)s.push("REQUIRED: Create/update Account Plan in ChurnZero (at-risk >$20K within 120 days)");
+else if(d<=120)s.push("Recommended: Create Account Plan for this at-risk renewal");
+else s.push("Optional: Create Account Plan to organize activities");
+s.push("Goal Types:");s.push({sub:"Renewal - required for at-risk within 120 days"});s.push({sub:"Save - disengaged/at-risk outside 120 day window"});s.push({sub:"Expand - growth potential (with Sales)"});s.push({sub:"Value Realization - driving adoption/ROI"});
+s.push("Each goal needs actionable Tasks assigned to correct owner (CSM, AE, leadership, support)");return s;},a:()=>[]},
+
+esc:{n:"Escalation Policy",u:"https://docs.google.com/document/d/1b1QTddct0rHwCiGTEmwl0RmI6-KdKbVu6g_wHeMvtlk/edit",
+s:(c)=>{const r=c.arr||0;return[
+"PRE-ESCALATION CHECKLIST:",{sub:"✓ Attempted resolution within my scope"},{sub:"✓ Need authority only a leader can provide"},{sub:"✓ Understand customer AND internal perspective"},{sub:"✓ Can describe issue in under 90 seconds"},{sub:"✓ Have a specific, actionable ask"},
+"PHASE 1 - CSM Resolution:",{sub:"Collaborate with Product, Support, Implementation, Sales"},{sub:"Leverage standard resources, consult peers/manager"},{sub:"Document in ChurnZero (Account Health or Renewal Overview/Update notes)"},
+"PHASE 2 - Manager Escalation: Create CZ task with:",{sub:"Overview (2-3 sentences)"},{sub:"Timeline: Key dates, commitments, events"},{sub:"Stakeholders: Customer roles, internal roles, blockers"},{sub:"Risk & Impact: Revenue at stake, churn probability"},{sub:"Recommended Plan: Actions with owners"},{sub:"Clear Ask: What, how, by when, why"},{sub:"Fully Drafted Email: Ready for leader to modify/send"},
+r>=100000?"PHASE 3: ≥$100K ARR → Escalate to Gabriela (keep Mel informed)":"PHASE 3: <$100K ARR → Escalate to Mel",
+"CSM OWNERSHIP IS NON-NEGOTIABLE: You remain quarterback throughout"];},
+a:()=>[{t:'w',h:'📋 ESCALATION TRIGGERS',m:["Unresolved after internal collaboration","Customer requests manager involvement","Impacts multiple accounts or is a pattern","Requires policy/pricing exception","Sentiment deteriorating despite efforts"]}]},
+
+unr:{n:"Unresponsive Customer Policy",u:"https://docs.google.com/document/d/1LKi70A29cg7xC0WlQDosMgoPAgeq0sDCDlVJ5WF3ve0/edit",
+s:(c)=>{const r=c.arr||0;return[
+"PHASE 1 - CSM Outreach to:",{sub:"Last contract signer"},{sub:"All commercial contacts (purchase, renewal, expansions)"},{sub:"All active solution admins"},
+"Requirements:",{sub:"Minimum 2 emails to each contact, spaced 3-5 business days"},{sub:"Document ALL attempts in ChurnZero"},{sub:"Add solution admin to Salesforce if not already a contact"},
+"If no response after emails:",{sub:"Phone call to last contract signer"},{sub:"Document call attempt via CZ Task"},
+"If still no response:",{sub:"Create Account Health/Renewal Overview/Update note"},{sub:"Escalate to CS Manager via CZ task with email draft"},
+"PHASE 2 - Manager sends 2 escalation emails:",{sub:"Reference prior CSM outreach"},{sub:"Emphasize importance + renewal date"},
+"If no response after manager emails:",{sub:"CSM escalates to executive via CZ task with drafted email"},
+r>=100000?"PHASE 3: ≥$100K → Gabriela (keep Mel informed)":"PHASE 3: <$100K → Mel"];},a:()=>[]},
+
+dat:{n:"Data Incident SOP",u:"https://docs.google.com/document/d/1dWErWCTltQ4VV88OtdmymfE6SwQzfSEEtDif9FTahjQ/edit",
+s:()=>["IMMEDIATE (Business Hours):",{sub:"Notify your manager and CS leadership immediately"},{sub:"Do NOT attempt to resolve or delete evidence yourself"},
+"AFTER HOURS/WEEKEND/HOLIDAY:",{sub:"Contact on-call CS leader by PHONE immediately"},{sub:"Check pinned message in #csm_team for contact info"},{sub:"On-call leader alerts CS management and Security"},
+"INTERNAL ESCALATION:",{sub:"CS management informs Security for investigation"},{sub:"Security determines if privacy/security incident occurred"},
+"RESOLUTION:",{sub:"72 hours to contain, mitigate, and communicate if confirmed"},{sub:"Security determines if customer notification needed"},{sub:"CS leads customer communications"},
+"DOCUMENTATION (Use Data Disclosure Template):",{sub:"Account Name of Data Shared (ARR, Renewal Date)"},{sub:"Account Name Data Disclosed To (ARR, Renewal Date)"},{sub:"Date, CS Owner, Status, Description"}],
+a:()=>[{t:'d',h:'🚨 CRITICAL: DATA INCIDENT',m:["Notify manager/CS leadership IMMEDIATELY","Do NOT resolve or delete evidence yourself","After hours: Call on-call leader (pinned in #csm_team)","Security has 72 hours to respond if confirmed"]}]},
+
+pay:{n:"Non-Payment Approach",u:"https://docs.google.com/document/d/1lZEXI8XcLMq5wnaO9add6f_xr3dDaPQiSzwtD0WdAu8/edit",
+s:()=>["Check Non-Payment Tracker (updated weekly from #churn channel)",
+"Research before outreach:",{sub:"Autorenewal issues?"},{sub:"Pain points shared?"},{sub:"License overage?"},{sub:"Current usage?"},
+"Use Non-Payment Template in ChurnZero for outreach",
+"If discounts/concessions requested:",{sub:"Get manager approval first"},{sub:"Email finance@activtrak.com (CC manager)"},{sub:"Wait for finance approval"},
+"Document in CZ Non-Payment List Details Note",
+"Managers: Update Non-Payment spreadsheet with likelihood of payment"],a:()=>[]},
+
+prs:{n:"Presentation Guidelines",u:"https://docs.google.com/document/d/1CwKOzkPqXJudraUs_n85CQci6DmT5zDVF6f-aF6L11Q/edit",
+s:()=>["[PREFERRED] Customer logs in and screenshares their own instance",{sub:"Avoids data disclosures"},{sub:"Creates engagement"},{sub:"Develops customer muscle memory"},
+"[ALTERNATIVE] Use Demo Environment (Sales Instance)",
+"[IF NECESSARY] Super Admin - BEFORE sharing screen:",{sub:"Close ALL tabs in window"},{sub:"Execute NEW SA login to customer account"},{sub:"Click profile icon → VERIFY Account ID matches"},{sub:"For impersonation: Get VERBAL confirmation first"}],
+a:()=>[{t:'w',h:'⚠️ DATA PROTECTION',m:["Always verify Account ID before presenting","Preferred: Customer screenshares their own instance"]}]},
+
+ai:{n:"AI Usage Policy",u:"https://docs.google.com/document/d/1MDEC3WHKz6DwmPUM-MGyW1vQ4EmfpyTy4p88TLugNJE/edit",
+s:()=>["APPROVED USES:",{sub:"Draft emails, meeting summaries"},{sub:"Research customers"},{sub:"Account Plans, Success Plans"},{sub:"Analyze anonymized aggregate data"},{sub:"Granola (free version) for meeting notes"},
+"NOT ALLOWED:",{sub:"Final unreviewed customer deliverables"},{sub:"Share PII without anonymization"},{sub:"Personal/free AI accounts"},{sub:"Store sensitive content outside approved systems"},
+"DATA HANDLING:",{sub:"Anonymize data (remove names, emails, IDs, PII)"},{sub:"Never input API keys, credentials, agent-level data"},
+"DISCLOSURE (if required):",{sub:"'ActivTrak uses enterprise AI tools to assist with note-taking, drafting, and analysis. All outputs are reviewed and verified before sharing.'"},
+"AI NOTES: Always edit/verify before logging in CZ/SFDC"],
+a:()=>[{t:'w',h:'⚠️ IF SENSITIVE INFO PASTED INTO AI',m:["Stop immediately","Notify your manager","Security initiates data incident process"]}]},
+
+cz:{n:"ChurnZero Notes Policy",u:"https://docs.google.com/document/d/1wVIOItiYG5yAFqjkKuf-vLuutL8S0l59PcGwhctnaAo/edit",
+s:()=>["NOTE TYPES:",{sub:"Leadership: Escalations, leadership-led calls"},{sub:"Non-Payment Details: Track payment status"},{sub:"Onboarding: RKO outcomes (share with AE)"},{sub:"EPR: Document EPR/REPO (share with AE, include deck)"},{sub:"Product Feedback: Feature feedback"},{sub:"Account Health: General health (see frequency below)"},{sub:"Renewal Overview: Create 120 days out, one per renewal"},{sub:"Renewal Update: Updates within 120 days (min monthly)"},{sub:"Technical Mitigation/Support: Tech issues, resolution"},
+"ACCOUNT HEALTH FREQUENCY:",{sub:"$100K+ Growth: Bi-weekly minimum"},{sub:"$100K+ Retention: Monthly minimum"},{sub:"$30K+ Growth: Monthly minimum"},{sub:"$30K+ Retention: Quarterly minimum"},
+"TAGS:",{sub:"Critical Update: Share with manager"},{sub:"Product Feedback: Share in product meeting"},{sub:"Value Feedback, 2026 Roadmap Feedback"},
+"License Pool/Command Center: Put ALL notes on License Pool account"],a:()=>[]},
+
+onc:{n:"CS Leader On-Call Policy",u:"https://docs.google.com/document/d/1vZlhzTO4qXVyNuSxCpigr8yKONGp3ktDmNKuUvskfnY/edit",
+s:()=>["FIND ON-CALL LEADER:",{sub:"CS Leader On-Call Rota (source of truth)"},{sub:"Pinned message in #csm_team"},{sub:"Also in #cx and #production_incidents"},
+"WHEN TO CONTACT:",{sub:"Data disclosures/incidents"},{sub:"Cross-functional coordination after hours"},{sub:"Other urgent matters"},{sub:"When in doubt, reach out"},
+"CONTACT PROTOCOL:",{sub:"Contact by PHONE, not Slack/email"},{sub:"Expect response within 15 minutes"},
+"IF DATA INCIDENT:",{sub:"On-call leader alerts VP of CS, CCO, and Security"}],
+a:()=>[{t:'w',h:'📞 CONTACT PROTOCOL',m:["Contact by PHONE, not Slack/email","Expect 15-minute response","Rota pinned in #csm_team"]}]},
+
+msp:{n:"MSP Licensing Policy",u:"https://docs.google.com/document/d/1SIsPnGkMrXHn4aCq0Fd0JIa5_WcsbOLlhshWgIjMNp0/edit",
+s:()=>["CUSTOMER MUST MEET ONE:",{sub:"1. Licensed MSP in official program"},{sub:"2. Direct account management (no MSP)"},{sub:"3. Transition to licensed MSP"},
+"NON-COMPLIANCE:",{sub:"Account suspension pending remediation"},{sub:"Account termination for breach"},
+"DECISION AUTHORITY:",{sub:"Matt Finlayson owns termination decisions"},{sub:"50+ seats: Matt consults Eric and Gabriela"},
+"TALKING POINTS:",{sub:"Unlicensed MSPs lack certification for proper management"},{sub:"Options: MSP joins program, manage direct, or switch to licensed MSP"},{sub:"Provide approved MSP partner list"}],a:()=>[]},
+
+cfi:{n:"Cross-Functional Incident Policy",u:"https://docs.google.com/document/d/1AOkejfJWodE6IelwjVLEyrsg-8D9mbQBMKz8Ez2XHew/edit",
+s:()=>["STEP 1 - Notification:",{sub:"Support/Engineering alerts CS"},{sub:"VP of CS (or on-call) joins incident Slack thread"},{sub:"Use Incident Overview Template"},
+"STEP 2 - Information Gathering:",{sub:"What happened/is happening"},{sub:"Which customers affected"},{sub:"Support level, ARR, CSM, Renewal date, Primary Contact"},
+"STEP 3 - Communication Plan:",{sub:"CS + Support + Engineering craft message"},{sub:"Signature → TAM"},{sub:"Named → CSM or Support"},{sub:"Scaled → Support"},
+"STEP 4 - Execute & Follow-Up:",{sub:"Deliver per plan, document in Slack/tracker"},{sub:"Post-incident review"}],a:()=>[]},
+
+blk:{n:"Bulk Uplift Approach",u:"https://docs.google.com/document/d/1pGB39evnKazZfyq9V5RIikb-hIsb7f8IJICrGKhbAl8/edit",
+s:()=>["INCLUDED: Accounts <$20K ARR",
+"EXCLUDED:",{sub:"Already-signed renewals"},{sub:"No auto-renewal language"},
+"DIRECT:",{sub:"Core product uplifted 7%"},{sub:"Ceiling: list price"},
+"VAR:",{sub:"Same 7% logic"},{sub:"Ceiling: 15% off list (partner margin)"},
+"RevOps handles notices; pushback → Scaled CS"],a:()=>[]},
+
+spt:{n:"Special Terms (CS Leadership Roles)",u:"https://docs.google.com/document/d/1b1QTddct0rHwCiGTEmwl0RmI6-KdKbVu6g_wHeMvtlk/edit",
+s:()=>["APPROVAL AUTHORITY:",{sub:"CS Manager: Non-standard billing frequency"},{sub:"VP of CS: Remove auto-renewal, tiered pricing"},{sub:"CCO: Month-to-month, termination for convenience, other non-standard terms"},
+"Document full business justification"],a:()=>[]},
+
+rol:{n:"Contact Role Definitions",u:"https://docs.google.com/document/d/1JuJJL8hokldD4eBJE33NdFRLQ_jUlE81jzWHghTpAC0/edit",
+s:()=>["CSMs maintain contact roles, review quarterly",
+"ROLES:",{sub:"Primary Contact: Central communication, coordinates evaluation"},{sub:"Economic Buyer (EB): Budget authority, final approval (MEDDIC)"},{sub:"Executive Sponsor: Senior leader, top-down support"},{sub:"End User: Daily users (admins, managers)"},{sub:"Billing Contact: Handles invoices/payment"},{sub:"Buying Committee: Group evaluating collectively"},
+"One contact can have multiple roles",
+"Add to Salesforce if not already a contact"],a:()=>[]}
+};
+const M={ctr:['ctr','frc','acp','esc'],unr:['unr','esc'],dat:['dat','onc'],pay:['pay'],esc:['esc'],ai:['ai'],prs:['prs','dat'],cz:['cz'],onc:['onc','dat'],msp:['msp'],frc:['frc'],acp:['acp'],cfi:['cfi','onc'],blk:['blk'],spt:['spt'],rol:['rol']};
+function mtch(q,kws){const l=q.toLowerCase();for(const k of kws)if(l.includes(k))return true;return false;}
+function analyze(q,ctx){
+let matched=[];
+for(const[k,kws]of Object.entries(K)){if(mtch(q,kws)){const pols=M[k]||[k];pols.forEach(p=>{if(!matched.includes(p))matched.push(p);});}}
+if(matched.length===0)return{policies:[],alerts:[]};
+let policies=[],alerts=[];
+matched.forEach(k=>{const p=P[k];if(p){policies.push({name:p.n,url:p.u,steps:p.s(ctx)});const a=p.a(ctx);if(a.length)alerts=alerts.concat(a);}});
+return{policies,alerts};
 }
-
-function analyze(question, ctx) {
-    const r = { steps: [], notifications: [], documentation: [], links: [] };
-    
-    if (match(question, defined.contraction)) {
-        const impact = ctx.arrImpact || 0;
-        if (impact < 500) r.steps.push({t:"As a CSM, you can self-approve this contraction (<$500)",s:false});
-        else if (impact < 20000) r.steps.push({t:"Submit for CS Manager approval ($500-$20K threshold)",s:false});
-        else r.steps.push({t:"Submit for VP of CS approval (>$20K threshold)",s:false});
-        if (impact >= 50000) { r.notifications.push("🚨 MATERIAL LOSS: Slack Gabriela immediately + schedule 15-min huddle"); r.notifications.push("Also notify Mel"); }
-        else if (impact >= 20000) r.notifications.push("⚠️ SURPRISE LOSS: Slack Mel immediately");
-        r.steps.push({t:"Update NRR/Forecast tracker (highlight changes in green)",s:false});
-        r.steps.push({t:"Update ChurnZero with Renewal Update note",s:false});
-        r.steps.push({t:"Prepare SFDC Quote: Previous ARR → New ARR → Change in ARR, cost per seat, previous seat count",s:false});
-        if (impact >= 20000 && ctx.daysToRenewal <= 120) r.steps.push({t:"Create/update Account Plan (required for at-risk >$20K within 120 days)",s:false});
-        r.documentation.push("Renewal Update note in ChurnZero"); r.documentation.push("Tag as 'Critical Update' if significant");
-        r.links.push({title:"Contraction Approvals",url:"https://docs.google.com/document/d/13xqWkeNaZsAuwRpt4CdnvEe1sowXL7BVftOlwBhopp8/edit"});
-        r.links.push({title:"Forecasting Expectations",url:"https://docs.google.com/document/d/182kBfnVt1FGLhIN6H17XZYeq9x00li5baNoQR8n3JWM/edit"});
-    }
-    if (match(question, defined.unresponsive)) {
-        r.steps.push({t:"Phase 1 - CSM Initial Outreach:",s:false});
-        r.steps.push({t:"Email (2x each) to: last contract signer, commercial contacts, active solution admins",s:true});
-        r.steps.push({t:"Space emails 3-5 business days apart",s:true});
-        r.steps.push({t:"Document ALL attempts in ChurnZero",s:true});
-        r.steps.push({t:"If solution admin not in Salesforce, add them as a contact",s:true});
-        r.steps.push({t:"No response after emails: Phone call to last contract signer",s:true});
-        r.steps.push({t:"Still no response: Create Account Health/Renewal note → Escalate to CS Manager via ChurnZero task with email draft",s:true});
-        r.steps.push({t:"Phase 2 - Manager Escalation:",s:false});
-        r.steps.push({t:"Manager sends 2 escalation emails referencing prior CSM outreach",s:true});
-        r.steps.push({t:"Phase 3 - Executive Escalation:",s:false});
-        r.steps.push({t:ctx.arr >= 100000 ? "ARR ≥$100K: Escalate to Gabriela (keep Mel informed)" : "ARR <$100K: Escalate to Mel",s:true});
-        r.documentation.push("Document all outreach attempts in ChurnZero");
-        r.links.push({title:"Unresponsive Customer Policy",url:"https://docs.google.com/document/d/1LKi70A29cg7xC0WlQDosMgoPAgeq0sDCDlVJ5WF3ve0/edit"});
-    }
-    if (match(question, defined.dataIncident)) {
-        r.notifications.push("🚨 IMMEDIATE: Notify your manager and CS leadership right away");
-        r.notifications.push("Do NOT attempt to resolve or delete evidence yourself");
-        r.steps.push({t:"During Business Hours: Notify manager and CS leadership immediately",s:false});
-        r.steps.push({t:"After Hours: Contact on-call CS leader by PHONE (pinned in #csm_team)",s:false});
-        r.steps.push({t:"Security has 72 hours to contain, mitigate, and communicate if confirmed",s:false});
-        r.documentation.push("Use Data Disclosure Incident Template");
-        r.documentation.push("Include: Account names (both), ARR, Renewal dates, Description");
-        r.links.push({title:"Data Incident SOP",url:"https://docs.google.com/document/d/1dWErWCTltQ4VV88OtdmymfE6SwQzfSEEtDif9FTahjQ/edit"});
-        r.links.push({title:"On-Call Policy",url:"https://docs.google.com/document/d/1vZlhzTO4qXVyNuSxCpigr8yKONGp3ktDmNKuUvskfnY/edit"});
-    }
-    if (match(question, defined.nonPayment)) {
-        r.steps.push({t:"Check Non-Payment Tracker (updated weekly from #churn channel)",s:false});
-        r.steps.push({t:"Research: autorenewal issues, pain points, license overage, usage",s:false});
-        r.steps.push({t:"Use Non-Payment Template in ChurnZero for outreach",s:false});
-        r.steps.push({t:"If discounts needed: Manager approval → Email finance@activtrak.com (CC manager)",s:false});
-        r.documentation.push("Non-Payment List Details note in ChurnZero");
-        r.links.push({title:"Non-Payment Approach",url:"https://docs.google.com/document/d/1lZEXI8XcLMq5wnaO9add6f_xr3dDaPQiSzwtD0WdAu8/edit"});
-        r.links.push({title:"Non-Payment Tracker",url:"https://docs.google.com/spreadsheets/d/17PCkX3kxILTmjJtdiR9hXmjAmh6E9d_YSUsTEvoPsS0/edit"});
-    }
-    if (match(question, defined.autoRenewal)) {
-        r.steps.push({t:"Removing auto-renewal requires VP of CS approval",s:false});
-        r.steps.push({t:"Document business justification",s:false});
-        r.steps.push({t:"Submit through proper approval chain",s:false});
-        r.links.push({title:"Contraction Approvals",url:"https://docs.google.com/document/d/13xqWkeNaZsAuwRpt4CdnvEe1sowXL7BVftOlwBhopp8/edit"});
-    }
-    if (match(question, defined.specialTerms)) {
-        r.steps.push({t:"Month-to-month / Termination for Convenience: CCO approval required",s:false});
-        r.steps.push({t:"Non-standard billing frequency: CS Manager approval",s:false});
-        r.steps.push({t:"Tiered pricing / Remove auto-renewal: VP of CS approval",s:false});
-        r.steps.push({t:"Document full business justification",s:false});
-        r.links.push({title:"CS Leadership Roles",url:"https://docs.google.com/document/d/1b1QTddct0rHwCiGTEmwl0RmI6-KdKbVu6g_wHeMvtlk/edit"});
-    }
-    if (match(question, defined.msp)) {
-        r.steps.push({t:"Verify if MSP is licensed in official MSP program",s:false});
-        r.steps.push({t:"Compliant options: 1) MSP enrolls in program, 2) Customer manages directly, 3) Transition to licensed MSP",s:false});
-        r.steps.push({t:"Non-compliance: Account suspension → termination for breach",s:false});
-        r.notifications.push("Termination decisions owned by Matt Finlayson");
-        r.notifications.push("50+ seats: Matt consults with Eric and Gabriela");
-        r.links.push({title:"MSP Licensing Policy",url:"https://docs.google.com/document/d/1SIsPnGkMrXHn4aCq0Fd0JIa5_WcsbOLlhshWgIjMNp0/edit"});
-    }
-    if (match(question, defined.forecasting)) {
-        r.steps.push({t:"Update forecast DAILY (not just Thursday)",s:false});
-        r.steps.push({t:"Highlight changes in GREEN in Excel tracker",s:false});
-        r.steps.push({t:"ChurnZero is system of record for detailed context",s:false});
-        r.steps.push({t:"All forecasts updated by EOD Thursday for Friday call",s:false});
-        r.steps.push({t:"Manager escalation: >$20K surprise → Slack Mel; ≥$50K → Slack Gabriela + huddle",s:false});
-        r.notifications.push("No surprises to your manager!");
-        r.links.push({title:"Forecasting Expectations",url:"https://docs.google.com/document/d/182kBfnVt1FGLhIN6H17XZYeq9x00li5baNoQR8n3JWM/edit"});
-    }
-    if (match(question, defined.accountPlan)) {
-        r.steps.push({t:"Account Plans REQUIRED for at-risk renewals >$20K within 120 days",s:false});
-        r.steps.push({t:"Goal Types: Renewal, Save, Expand, Value Realization",s:false});
-        r.steps.push({t:"Include actionable tasks assigned to correct owners",s:false});
-        r.links.push({title:"Account Plan Expectations",url:"https://docs.google.com/document/d/1NLm5VgIgTtsNrfMNvKs5rCg0ZfYrh_vr0hJk0I3s0NU/edit"});
-    }
-    if (match(question, defined.escalation)) {
-        r.steps.push({t:"Pre-Escalation: Attempted resolution? Need authority only leader can provide? Can describe in 90 seconds?",s:false});
-        r.steps.push({t:"Phase 1 CSM: Collaborate with internal teams, document in ChurnZero",s:false});
-        r.steps.push({t:"Phase 2 Manager: Create CZ task with Overview, Timeline, Stakeholders, Risk, Recommended Plan, Clear Ask, Drafted Email",s:false});
-        r.steps.push({t:"Phase 3 Executive: <$100K → Mel; ≥$100K → Gabriela (keep Mel informed)",s:false});
-        r.notifications.push("CSM Ownership is Non-Negotiable: You remain quarterback throughout");
-        r.links.push({title:"Escalation Policy",url:"https://docs.google.com/document/d/1b1QTddct0rHwCiGTEmwl0RmI6-KdKbVu6g_wHeMvtlk/edit"});
-    }
-    if (match(question, defined.aiUsage)) {
-        r.steps.push({t:"Approved: Draft emails, meeting summaries, research, account plans, anonymized data analysis",s:false});
-        r.steps.push({t:"Approved: Granola (free version) for meeting notes",s:false});
-        r.steps.push({t:"NOT Allowed: Personal AI accounts, unreviewed customer deliverables, PII without anonymization",s:false});
-        r.steps.push({t:"Always anonymize data before using AI, always review AI output before sharing",s:false});
-        r.notifications.push("If you accidentally paste sensitive info: Stop immediately, notify manager");
-        r.links.push({title:"AI Usage Policy",url:"https://docs.google.com/document/d/1MDEC3WHKz6DwmPUM-MGyW1vQ4EmfpyTy4p88TLugNJE/edit"});
-    }
-    if (match(question, defined.presentation)) {
-        r.steps.push({t:"[PREFERRED] Customer logs in and screenshares their own instance",s:false});
-        r.steps.push({t:"Alternative: Use Demo Environment (Sales Instance)",s:false});
-        r.steps.push({t:"If using Super Admin, BEFORE sharing: 1) Close all tabs, 2) Fresh SA login, 3) Verify Account ID matches, 4) Get verbal confirmation for impersonation",s:false});
-        r.notifications.push("Always verify Account ID before presenting");
-        r.links.push({title:"Presentation Guidelines",url:"https://docs.google.com/document/d/1CwKOzkPqXJudraUs_n85CQci6DmT5zDVF6f-aF6L11Q/edit"});
-    }
-    if (match(question, defined.churnzeroNotes)) {
-        r.steps.push({t:"Note Types: Leadership, Non-Payment, Onboarding, EPR, Product Feedback, Account Health, Renewal Overview/Update, Technical Mitigation, Training",s:false});
-        r.steps.push({t:"Account Health Frequency: $100K+ Growth=bi-weekly, $100K+ Retention=monthly, $30K+ Growth=monthly, $30K+ Retention=quarterly",s:false});
-        r.steps.push({t:"Tags: Critical Update (share with manager), Product Feedback, Value Feedback, 2026 Roadmap",s:false});
-        r.steps.push({t:"License Pool/Command Center: Put ALL notes on License Pool account (has ARR)",s:false});
-        r.notifications.push("AI notes must be edited/synthesized before logging");
-        r.links.push({title:"ChurnZero Notes Policy",url:"https://docs.google.com/document/d/1wVIOItiYG5yAFqjkKuf-vLuutL8S0l59PcGwhctnaAo/edit"});
-    }
-    if (match(question, defined.contactRoles)) {
-        r.steps.push({t:"Primary Contact: Central communication point, coordinates evaluation",s:false});
-        r.steps.push({t:"Economic Buyer (EB): Budget authority, final approval power (MEDDIC)",s:false});
-        r.steps.push({t:"Executive Sponsor: Senior leader, top-down support",s:false});
-        r.steps.push({t:"End User: Daily users (admins, managers)",s:false});
-        r.steps.push({t:"Billing Contact: Handles invoices/payment",s:false});
-        r.steps.push({t:"CSM responsible for maintaining and reviewing contacts quarterly",s:false});
-        r.links.push({title:"Contact Role Definitions",url:"https://docs.google.com/document/d/1JuJJL8hokldD4eBJE33NdFRLQ_jUlE81jzWHghTpAC0/edit"});
-    }
-    if (match(question, defined.crossFunctional)) {
-        r.steps.push({t:"Step 1: VP of CS (or on-call) joins incident Slack thread",s:false});
-        r.steps.push({t:"Step 2: Gather info - what happened, affected customers, ARR, CSM, renewal date",s:false});
-        r.steps.push({t:"Step 3: CS + Support + Engineering craft customer message",s:false});
-        r.steps.push({t:"Communication: Signature=TAM, Named=CSM/Support, Scaled=Support",s:false});
-        r.links.push({title:"Cross-Functional Incidents",url:"https://docs.google.com/document/d/1AOkejfJWodE6IelwjVLEyrsg-8D9mbQBMKz8Ez2XHew/edit"});
-        r.links.push({title:"Incident Template",url:"https://docs.google.com/document/d/1lZg9VB1A-AQyZWlLQMRZiB9sddmAgGtGXXtPYYmGdeU/edit"});
-    }
-    if (match(question, defined.onCall)) {
-        r.steps.push({t:"Find on-call leader: Check CS Leader On-Call Rota or pinned message in #csm_team",s:false});
-        r.steps.push({t:"Also posted in #cx and #production_incidents",s:false});
-        r.steps.push({t:"Contact via PHONE (not Slack/email) - expect response within 15 minutes",s:false});
-        r.steps.push({t:"When to contact: Data incidents, cross-functional coordination, urgent matters",s:false});
-        r.notifications.push("Always contact by PHONE for after-hours issues");
-        r.links.push({title:"On-Call Policy",url:"https://docs.google.com/document/d/1vZlhzTO4qXVyNuSxCpigr8yKONGp3ktDmNKuUvskfnY/edit"});
-        r.links.push({title:"On-Call Rota",url:"https://docs.google.com/spreadsheets/d/1gKYUD_6zLqomj65DZAHLfGpq0oFWVkeaeaYVTBcsTck/edit"});
-    }
-    if (match(question, defined.bulkUplift)) {
-        r.steps.push({t:"Bulk Uplift applies to accounts <$20K ARR",s:false});
-        r.steps.push({t:"Direct: 7% uplift on core product (capped at list price)",s:false});
-        r.steps.push({t:"VAR: Same 7% logic, ceiling 15% off list price (partner margin)",s:false});
-        r.steps.push({t:"Exclusions: Already-signed renewals, accounts without auto-renewal",s:false});
-        r.steps.push({t:"RevOps handles notices; pushback goes to Scaled CS",s:false});
-        r.links.push({title:"Bulk Uplift Approach",url:"https://docs.google.com/document/d/1pGB39evnKazZfyq9V5RIikb-hIsb7f8IJICrGKhbAl8/edit"});
-    }
-    if (r.steps.length === 0) {
-        r.steps.push({t:"No specific playbook match found. Try rephrasing or check Quick Reference tab.",s:false});
-        r.steps.push({t:"Common scenarios: contraction, unresponsive, data incident, non-payment, escalation, forecasting, account plan, notes, on-call",s:false});
-    }
-    return r;
-}
-
-function render(r) {
-    document.getElementById('notifications').innerHTML = r.notifications.length ? `<div class="alert alert-warning"><h4>⚡ Immediate</h4>${r.notifications.map(n=>`<p>${n}</p>`).join('')}</div>` : '';
-    let num = 0;
-    document.getElementById('steps').innerHTML = `<h4 style="margin-bottom:0.75rem;color:var(--gray-700)">📋 Steps:</h4><ol class="steps-list">${r.steps.map(s => {
-        if (!s.s) num++;
-        return `<li><span class="step-number ${s.s?'sub':''}">${s.s?'•':num}</span><span class="step-text ${s.s?'sub':''}">${s.t}</span></li>`;
-    }).join('')}</ol>`;
-    document.getElementById('documentation').innerHTML = r.documentation.length ? `<div class="docs-box"><h4>📝 Documentation:</h4><ul>${r.documentation.map(d=>`<li>• ${d}</li>`).join('')}</ul></div>` : '';
-    document.getElementById('links').innerHTML = r.links.length ? `<div class="links-section"><h4>🔗 Source Docs:</h4><div class="links-grid">${r.links.map(l=>`<a href="${l.url}" target="_blank" class="doc-link">${l.title} →</a>`).join('')}</div></div>` : '';
-    document.getElementById('results').classList.add('show');
-    document.getElementById('results').scrollIntoView({behavior:'smooth'});
-}
-
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById(t.dataset.tab).classList.add('active');
-}));
-document.getElementById('contextToggle').addEventListener('click', function() {
-    const f = document.getElementById('contextFields');
-    f.classList.toggle('show');
-    this.textContent = f.classList.contains('show') ? '− Hide context' : '+ Add context (ARR, impact, etc.)';
+function render(r){
+const out=document.getElementById('out');
+if(r.policies.length===0){out.innerHTML='<p style="color:var(--g500)">No specific policy match. Try: contraction, unresponsive, data incident, escalation, notes, on-call, forecasting, account plan</p>';document.getElementById('res').classList.add('show');return;}
+let html='';
+r.alerts.forEach(a=>{html+=`<div class="alrt alrt-${a.t==='d'?'d':'w'}"><h4>${a.h}</h4>${a.m.map(m=>`<p>• ${m}</p>`).join('')}</div>`;});
+r.policies.forEach(p=>{
+let num=0;
+const stepsHtml=p.steps.map(s=>{
+if(typeof s==='object'&&s.sub)return`<li><span class="stp-n sub">•</span><span class="stp-t sub">${s.sub}</span></li>`;
+num++;return`<li><span class="stp-n">${num}</span><span class="stp-t">${s}</span></li>`;
+}).join('');
+html+=`<div class="pol-sec"><h4>📋 ${p.name}<a href="${p.url}" target="_blank">Open Doc →</a></h4><ol class="stp-lst">${stepsHtml}</ol></div>`;
 });
-document.querySelectorAll('.example-btn').forEach(b => b.addEventListener('click', () => document.getElementById('question').value = b.textContent));
-document.getElementById('submitBtn').addEventListener('click', () => {
-    const q = document.getElementById('question').value.trim();
-    if (!q) return;
-    const ctx = { arr: parseFloat(document.getElementById('arr').value)||0, arrImpact: parseFloat(document.getElementById('arrImpact').value)||0, daysToRenewal: parseFloat(document.getElementById('daysToRenewal').value)||999 };
-    render(analyze(q, ctx));
-});
-document.getElementById('question').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('submitBtn').click(); }});
+out.innerHTML=html;document.getElementById('res').classList.add('show');document.getElementById('res').scrollIntoView({behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tc').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.getElementById(t.dataset.tab).classList.add('active');}));
+document.getElementById('ctxTog').addEventListener('click',function(){const f=document.getElementById('ctxFlds');f.classList.toggle('show');this.textContent=f.classList.contains('show')?'− Hide context':'+ Add context (ARR, impact, etc.)';});
+document.querySelectorAll('.ex-btn').forEach(b=>b.addEventListener('click',()=>document.getElementById('q').value=b.textContent));
+document.getElementById('sub').addEventListener('click',()=>{const q=document.getElementById('q').value.trim();if(!q)return;const ctx={arr:parseFloat(document.getElementById('arr').value)||0,imp:parseFloat(document.getElementById('imp').value)||0,dtr:parseFloat(document.getElementById('dtr').value)||999};render(analyze(q,ctx));});
+document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('sub').click();}});
 </script>
 </body>
 </html>
